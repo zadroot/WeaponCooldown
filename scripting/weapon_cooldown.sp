@@ -51,6 +51,9 @@ public OnPluginStart()
 	CreateConVar("sm_weapon_cooldown_version", PLUGIN_VERSION, PLUGIN_NAME, FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	WC_Enabled = CreateConVar("sm_weapon_cooldown_enable", "1", "Whether or not enable Weapon Cooldown", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 
+	// CStrike have a custom CSFireBullets or something like that (c) psychonic
+	HookEventEx("weapon_fire", OnWeaponFire);
+
 	// Hook changes only for main variable
 	HookConVarChange(WC_Enabled, OnPluginToggle);
 
@@ -132,19 +135,36 @@ public OnClientPutInServer(client)
 	}
 }
 
+/* OnWeaponFire()
+ *
+ * Called when a client is firing with weapon for CS:S and CS:GO.
+ * ------------------------------------------------------------------ */
+public OnWeaponFire(Handle:event, const String:name[], bool:dontBroadcast)
+{
+	// Check if plugin is enabled right here
+	if (GetConVarBool(WC_Enabled))
+	{
+		// Retrieve the weapon string from event key
+		decl String:weapon[PLATFORM_MAX_PATH];
+		GetEventString(event, "weapon", weapon, sizeof(weapon));
+
+		// Make FireBullets callback from event
+		OnFireBullets(GetClientOfUserId(GetEventInt(event, "userid")), 0, weapon);
+	}
+}
+
 /* OnFireBullets()
  *
  * Called when a client is firing with weapon.
  * ------------------------------------------------------------------ */
 public OnFireBullets(client, dummy, const String:weaponname[])
 {
-	// Declare some trie info
 	decl cooldown[array_size];
 	if (GetTrieArray(WeaponsTrie, weaponname, cooldown, array_size))
 	{
 		/**
 		* For some reason second param (dummy) in FireBulletsPost callback is not static
-		* So it means that shots aren't calculated when weapon fires - but it works fine for shotguns I assume
+		* So it means that shots aren't calculated when weapon fires, but it works fine for shotguns I assume
 		* I have to use static here to properly calculate shots when callback is fired due to plugin features.
 		*/
 		static shots;

@@ -1,7 +1,7 @@
 // Weapon Cooldown by Root.
 // How to setup cooldown for weapons:
-// 1) Add weapon classname at a new line.
+// 1) Add weapon classname at a new line. (Ignore 'weapon_' prefix in CS:S and CS:GO).
 // 2) Then add max. amount of shots between cooldown. Value 1 will create cooldown after every shot, 2 - after 2 shots, etc.
-// 3) Then add actual cooldown value. Value can not be less than 0.0.
-// Example: weapon_ak47;1;1.0 will set 1 second cooldown for ak47 after every single shot. Symbol ; is case sensitive in configuring!
-// See weapon names here https://wiki.alliedmods.net/Weapon_Names(Source)
+// 3) Then add actual cooldown value (in seconds). Value can not be less than 0.0!
+// Example: ak47;1;1.0 will set 1 second cooldown for ak47 after every single shot. Symbol ; is case sensitive in configuring!
+// See all available weapon names here https://wiki.alliedmods.net/Weapon_Names(Source)
