@@ -21,7 +21,7 @@ enum // values in trie array
 	array_size     // size of trie array
 };
 
-new	Handle:WeaponsTrie, Handle:WC_Enabled, m_flNextAttack;
+new Handle:WeaponsTrie, Handle:WC_Enabled, m_flNextAttack;
 
 // ====[ PLUGIN ]===================================================
 public Plugin:myinfo =
@@ -104,8 +104,8 @@ public OnMapStart()
 		decl String:fileline[PLATFORM_MAX_PATH];
 		decl String:datas[3][PLATFORM_MAX_PATH];
 
-		// Read every line in config
-		while (!IsEndOfFile(file) && ReadFileLine(file, fileline, sizeof(fileline)))
+		// Read every line in config and get rid of pieces
+		while (ReadFileLine(file, fileline, sizeof(fileline)))
 		{
 			if (ExplodeString(fileline, ";", datas, sizeof(datas), sizeof(datas[])) == 3)
 			{
@@ -137,11 +137,11 @@ public OnClientPutInServer(client)
 
 /* OnWeaponFire()
  *
- * Called when a client is firing with weapon for CS:S and CS:GO.
+ * Called when a client is firing a weapon for both CS:S and CS:GO.
  * ------------------------------------------------------------------ */
 public OnWeaponFire(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	// Check if plugin is enabled right here
+	// Check if plugin is enabled at the event
 	if (GetConVarBool(WC_Enabled))
 	{
 		// Retrieve the weapon string from event key
@@ -155,7 +155,7 @@ public OnWeaponFire(Handle:event, const String:name[], bool:dontBroadcast)
 
 /* OnFireBullets()
  *
- * Called when a client is firing with weapon.
+ * Called when a client is firing a weapon.
  * ------------------------------------------------------------------ */
 public OnFireBullets(client, dummy, const String:weaponname[])
 {
@@ -164,13 +164,13 @@ public OnFireBullets(client, dummy, const String:weaponname[])
 	{
 		/**
 		* For some reason second param (dummy) in FireBulletsPost callback is not static
-		* So it means that shots aren't calculated when weapon fires, but it works fine for shotguns I assume
+		* So it means that shots aren't calculated when weapon fires, but it works fine for shotguns probably
 		* I have to use static here to properly calculate shots when callback is fired due to plugin features.
 		*/
 		static shots;
 		if (++shots >= cooldown[maxshots])
 		{
-			// Reset made shots
+			// Reset all shots
 			shots = 0;
 
 			// Prevnet player from firing for defined cooldown
